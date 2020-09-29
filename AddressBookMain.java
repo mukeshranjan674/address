@@ -47,25 +47,75 @@ public class AddressBookMain {
 		System.out.println("Contact Deleted !!!");
 	}
 	
+	
+	public static void maintainAddressBook(AddressBookMain a) {
+		
+		while(true) {
+			System.out.println("\n1. Add Contact Details");
+			System.out.println("\n2. Edit Contact Details");
+			System.out.println("\n3. Delete Contact Details");
+			System.out.println("\n4. Exit");
+			System.out.println("\nEnter your choice");
+			int choice = sc.nextInt();
+			 
+			switch(choice) {
+				case 1:
+					while(true) {
+						System.out.println("Enter Contact details of person in format: first name, last name, address, city, state, zip, phone, email");
+						String[]details = new String[8];
+						for(int i = 0 ; i <= 7 ; i++) {
+							details[i] = sc.next();
+						}
+						ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4], details[5], details[6], details[7]);
+						a.addContactPerson(c);
+						System.out.println("Want more transactions (y/n)");
+						String option1 = sc.next(); 
+						if((option1.equals("y")))
+							continue;
+						else break;
+					}
+					break;
+				case 2:
+					while(true) {
+						System.out.println("Enter the first name to edit the contact details");
+						String name = sc.next();
+						a.editContactPerson(name);
+						System.out.println("Want more transactions (y/n)");
+						String option2 = sc.next(); 
+						if((option2.equals("y")))
+							continue;
+						else break;
+					}
+					break;
+				case 3:
+					while(true) {
+						System.out.println("Enter the first name to delete the contact details");
+						String dname = sc.next();
+						a.deleteContactPerson(dname);
+						System.out.println("Want more transactions (y/n)");
+						String option3 = sc.next(); 
+						if((option3.equals("y")))
+							continue;
+						else break;
+					}
+					break;
+				default:
+					break;
+			}
+			if(choice == 4)
+				break;
+			else 
+				System.out.println("Enter correct option");
+		}
+	}
 	public static void main(String[] args) {
 	
 		AddressBookMain a = new AddressBookMain();
 		System.out.println("***** Welcome to Address Book Program *****");
-		System.out.println("Enter Contact details of person in format: first name, last name, address, city, state, zip, phone, email");
-		String[]details = new String[8];
-		for(int i = 0 ; i <= 7 ; i++) {
-			details[i] = sc.next();
-		}
-		ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4], details[5], details[6], details[7]);
-		a.addContactPerson(c);
-		System.out.println("Enter the first name to edit the contact details");
-		String name = sc.next();
-		a.editContactPerson(name);
-		System.out.println("Enter the first name to delete the contact details");
-		String dname = sc.next();
-		a.deleteContactPerson(dname);
-		System.out.println("After Deletion List size " + a.AddressBookList.size());
-		System.out.println("After Deletion Map values " +a.AddressBookMap.values());
+		maintainAddressBook(a);	
+		
+		System.out.println("List size " + a.AddressBookList.size());
+		System.out.println("Map values " +a.AddressBookMap.values());
 	}
 
 }
