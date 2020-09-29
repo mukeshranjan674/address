@@ -1,9 +1,30 @@
+import java.util.*;
+
 public class AddressBookMain {
 
+	private List<ContactPerson>AddressBook;
+	
+	public AddressBookMain() {
+		AddressBook = new ArrayList<ContactPerson>();
+	}
+	
+	private void addContactPerson(ContactPerson c) {
+		AddressBook.add(c);
+	}
+	
 	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		AddressBookMain a = new AddressBookMain();
 		System.out.println("***** Welcome to Address Book Program *****");
-		ContactPerson c = new ContactPerson("Mukesh" , "Ranjan" , "Sijua" , "Dhanbad" , "Jharkhand" , "828108" , "1111111111" , "abc@gmail.com");
+		System.out.println("Enter Contact details of person in format first name, last name, address, city, state, zip, phone, email");
+		String[]details = new String[8];
+		for(int i = 0 ; i <= 7 ; i++) {
+			details[i] = sc.next();
+		}
+		ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4], details[5], details[6], details[7]);
+		a.addContactPerson(c);
 		System.out.println(c);
+
 	}
 
 }
