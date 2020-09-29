@@ -35,6 +35,18 @@ public class AddressBookMain {
 		System.out.println(cp);
 	}
 	
+	public void deleteContactPerson(String name) {
+		boolean b2 = false;
+		ContactPerson cp = AddressBookMap.get(name);
+		AddressBookMap.remove(name);
+		for(int i =0 ; i < AddressBookList.size() ; i++) {
+			if(AddressBookList.get(i).getFirstName().equals(name)) {
+				AddressBookList.remove(i);
+			}
+		}
+		System.out.println("Contact Deleted !!!");
+	}
+	
 	public static void main(String[] args) {
 	
 		AddressBookMain a = new AddressBookMain();
@@ -49,7 +61,11 @@ public class AddressBookMain {
 		System.out.println("Enter the first name to edit the contact details");
 		String name = sc.next();
 		a.editContactPerson(name);
-
+		System.out.println("Enter the first name to delete the contact details");
+		String dname = sc.next();
+		a.deleteContactPerson(dname);
+		System.out.println("After Deletion List size " + a.AddressBookList.size());
+		System.out.println("After Deletion Map values " +a.AddressBookMap.values());
 	}
 
 }
