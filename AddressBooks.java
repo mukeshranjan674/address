@@ -57,21 +57,26 @@ class AddressBookMain {
 
 	private void editContactPerson(String firstName) {
 		ContactPerson cp = addressBookMap.get(firstName);
-		System.out.println("Here is the Person Details to be edited " + cp);
-		System.out
-				.println("Enter Updated Contact details of person in format: Address, City, State, Zip, Phone, email");
-		String[] details = new String[6];
-		for (int i = 0; i <= 5; i++) {
-			details[i] = sc.next();
+		if(cp == null) {
+			System.out.println("\nNo such Person available !!\n");
 		}
-		cp.setAddress(details[0]);
-		cp.setCity(details[1]);
-		cp.setState(details[2]);
-		cp.setZip(details[3]);
-		cp.setPhone(details[4]);
-		cp.setEmail(details[5]);
-		System.out.println("Updated Contact Details :");
-		System.out.println(cp);
+		else {
+			System.out.println("Here is the Person Details to be edited " + cp);
+			System.out
+					.println("Enter Updated Contact details of person in format: Address, City, State, Zip, Phone, email");
+			String[] details = new String[6];
+			for (int i = 0; i <= 5; i++) {
+				details[i] = sc.next();
+			}
+			cp.setAddress(details[0]);
+			cp.setCity(details[1]);
+			cp.setState(details[2]);
+			cp.setZip(details[3]);
+			cp.setPhone(details[4]);
+			cp.setEmail(details[5]);
+			System.out.println("Updated Contact Details :");
+			System.out.println(cp);
+		}
 	}
 
 	public void deleteContactPerson(String name) {
