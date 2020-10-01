@@ -62,8 +62,7 @@ class AddressBookMain {
 		}
 		else {
 			System.out.println("Here is the Person Details to be edited " + cp);
-			System.out
-					.println("Enter Updated Contact details of person in format: Address, City, State, Zip, Phone, email");
+			System.out.println("Enter Updated Contact details of person in format: Address, City, State, Zip, Phone, email");
 			String[] details = new String[6];
 			for (int i = 0; i <= 5; i++) {
 				details[i] = sc.next();
@@ -104,8 +103,7 @@ class AddressBookMain {
 			switch (choice) {
 			case 1:
 				while (true) {
-					System.out.println(
-							"Enter Contact details of person in format: first name, last name, address, city, state, zip, phone, email");
+					System.out.println("Enter Contact details of person in format: first name, last name, address, city, state, zip, phone, email");
 					String[] details = new String[8];
 					for (int i = 0; i <= 7; i++) {
 						details[i] = sc.next();
