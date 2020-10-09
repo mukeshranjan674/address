@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ public class AddressBooks {
 		addressBooks.forEach((k, v) -> System.out.println(k + "\n"));
 	}
 
-	public void searchPerson(String searchIn) {
+	public int searchPerson(String searchIn, boolean toView) {
 
 		Iterator addressBookList = addressBooks.entrySet().iterator();
 		int noOfPersonInCity = 0;
@@ -32,7 +31,8 @@ public class AddressBooks {
 			Collections.sort(listCity);
 			for (String s : listCity)
 				if (s.equals(searchIn)) {
-					System.out.println(mapCity.get(s));
+					if (toView)
+						System.out.println(mapCity.get(s));
 					noOfPersonInCity++;
 				}
 
@@ -41,12 +41,20 @@ public class AddressBooks {
 			Collections.sort(listState);
 			for (String s : listState)
 				if (s.equals(searchIn)) {
-					System.out.println(mapState.get(s));
+					if (toView)
+						System.out.println(mapState.get(s));
 					noOfPersonInState++;
 				}
 		}
-		if (noOfPersonInCity == 0 && noOfPersonInState == 0)
+
+		if (noOfPersonInCity != 0)
+			return noOfPersonInCity;
+		if (noOfPersonInState != 0)
+			return noOfPersonInState;
+		else {
 			System.out.println("\nNo Person Found !!\n");
+			return 0;
+		}
 	}
 
 	public static void main(String[] args) {
@@ -58,8 +66,9 @@ public class AddressBooks {
 		while (true) {
 			System.out.println("\n1. Add a new Address Book");
 			System.out.println("\n2. Search person across all address books");
-			System.out.println("\n3. Show names of Address Books");
-			System.out.println("\n4. Exit");
+			System.out.println("\n3. View names of Address Books");
+			System.out.println("\n4. View count of persons according to state or city ");
+			System.out.println("\n5. Exit");
 			System.out.println("\nEnter your choice");
 			int choice = sc.nextInt();
 
@@ -84,23 +93,30 @@ public class AddressBooks {
 			case 2:
 				System.out.println("Enter city or state to search a person");
 				String searchIn = sc.next();
-				a.searchPerson(searchIn);
+				a.searchPerson(searchIn, true);
 				break;
 
 			case 3:
 				a.showAddressBooks();
 				break;
 
+			case 4:
+				System.out.println("Enter city or state to view count");
+				String countFor = sc.next();
+				int count = a.searchPerson(countFor, false);
+				if (count != 0)
+					System.out.println("No of Persons in " + countFor + "is : " + count);
+
 			default:
 				break;
 			}
 
-			if (choice == 4)
+			if (choice == 5)
 				break;
 			else
 				System.out.println("\nEnter option");
 		}
-
+		System.out.println("\nThank You !!!");
 	}
 }
 
@@ -184,12 +200,6 @@ class AddressBookMain {
 		System.out.println("Contact Deleted !!!");
 	}
 
-	/**
-	 * UC7
-	 * 
-	 * @param name
-	 * @return
-	 */
 	public boolean checkForDuplicateName(String name) {
 		for (ContactPerson cd : addressBookList) {
 			if (cd.getFirstName().equals(name)) {
