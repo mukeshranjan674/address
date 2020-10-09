@@ -1,4 +1,6 @@
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,25 +15,37 @@ public class AddressBooks {
 	public void showAddressBooks() {
 
 		System.out.println("\nList of Address Books Added: \n");
-		addressBooks.forEach((k, v) -> System.out.println(k + " " + v.addressBookList + "\n"));
+		addressBooks.forEach((k, v) -> System.out.println(k + "\n"));
 	}
 
 	public void searchPerson(String searchIn) {
 
 		Iterator addressBookList = addressBooks.entrySet().iterator();
-		int noOfPerson = 0;
+		int noOfPersonInCity = 0;
+		int noOfPersonInState = 0;
 		while (addressBookList.hasNext()) {
 			Map.Entry entry = (Map.Entry) addressBookList.next();
 			AddressBookMain a = (AddressBookMain) entry.getValue();
-			List<ContactPerson> list = a.getAddressBookList();
-			for (ContactPerson c : list) {
-				if (c.getCity().equalsIgnoreCase(searchIn) || c.getState().equalsIgnoreCase(searchIn)) {
-					System.out.println("\n" + c);
-					noOfPerson++;
+
+			Map<String, ContactPerson> mapCity = a.getAddressBookByCity();
+			ArrayList<String> listCity = new ArrayList<>(mapCity.keySet());
+			Collections.sort(listCity);
+			for (String s : listCity)
+				if (s.equals(searchIn)) {
+					System.out.println(mapCity.get(s));
+					noOfPersonInCity++;
 				}
-			}
+
+			Map<String, ContactPerson> mapState = a.getAddressBookByState();
+			ArrayList<String> listState = new ArrayList<>(mapState.keySet());
+			Collections.sort(listState);
+			for (String s : listState)
+				if (s.equals(searchIn)) {
+					System.out.println(mapState.get(s));
+					noOfPersonInState++;
+				}
 		}
-		if (noOfPerson == 0)
+		if (noOfPersonInCity == 0 && noOfPersonInState == 0)
 			System.out.println("\nNo Person Found !!\n");
 	}
 
@@ -44,7 +58,8 @@ public class AddressBooks {
 		while (true) {
 			System.out.println("\n1. Add a new Address Book");
 			System.out.println("\n2. Search person across all address books");
-			System.out.println("\n3. Exit");
+			System.out.println("\n3. Show names of Address Books");
+			System.out.println("\n4. Exit");
 			System.out.println("\nEnter your choice");
 			int choice = sc.nextInt();
 
@@ -72,46 +87,64 @@ public class AddressBooks {
 				a.searchPerson(searchIn);
 				break;
 
+			case 3:
+				a.showAddressBooks();
+				break;
+
 			default:
 				break;
 			}
 
-			if (choice == 3)
+			if (choice == 4)
 				break;
 			else
 				System.out.println("\nEnter option");
 		}
-		a.showAddressBooks();
+
 	}
 }
 
 class AddressBookMain {
 
 	Scanner sc = new Scanner(System.in);
-	public List<ContactPerson> addressBookList;
-	private Map<String, ContactPerson> addressBookMap;
+	private List<ContactPerson> addressBookList;
+	private Map<String, ContactPerson> addressBookByName;
+	private Map<String, ContactPerson> addressBookByCity;
+	private Map<String, ContactPerson> addressBookByState;
 
 	public AddressBookMain() {
 		addressBookList = new ArrayList<ContactPerson>();
-		addressBookMap = new HashMap<String, ContactPerson>();
+		addressBookByName = new HashMap<String, ContactPerson>();
+		addressBookByCity = new TreeMap<String, ContactPerson>();
+		addressBookByState = new TreeMap<String, ContactPerson>();
+	}
+
+	public Map<String, ContactPerson> getAddressBookByName() {
+		return addressBookByName;
+	}
+
+	public Map<String, ContactPerson> getAddressBookByCity() {
+		return addressBookByCity;
+	}
+
+	public Map<String, ContactPerson> getAddressBookByState() {
+		return addressBookByState;
 	}
 
 	public List<ContactPerson> getAddressBookList() {
 		return addressBookList;
 	}
 
-	public Map<String, ContactPerson> getAddressBookMap() {
-		return addressBookMap;
-	}
-
 	private void addContactPerson(ContactPerson c) {
 		addressBookList.add(c);
-		addressBookMap.put(c.getFirstName(), c);
+		addressBookByName.put(c.getFirstName(), c);
+		addressBookByCity.put(c.getCity(), c);
+		addressBookByState.put(c.getState(), c);
 		System.out.println("\nContact Added\n");
 	}
 
 	private void editContactPerson(String firstName) {
-		ContactPerson cp = addressBookMap.get(firstName);
+		ContactPerson cp = addressBookByName.get(firstName);
 		if (cp == null) {
 			System.out.println("\nNo such Person available !!\n");
 		} else {
@@ -134,9 +167,15 @@ class AddressBookMain {
 	}
 
 	public void deleteContactPerson(String name) {
-		boolean b2 = false;
-		ContactPerson cp = addressBookMap.get(name);
-		addressBookMap.remove(name);
+		addressBookByName.remove(name);
+		addressBookByCity.forEach((k, v) -> {
+			if (v.getFirstName().equals(name))
+				addressBookByCity.remove(name);
+		});
+		addressBookByState.forEach((k, v) -> {
+			if (v.getFirstName().equals(name))
+				addressBookByState.remove(name);
+		});
 		for (int i = 0; i < addressBookList.size(); i++) {
 			if (addressBookList.get(i).getFirstName().equals(name)) {
 				addressBookList.remove(i);
@@ -201,6 +240,7 @@ class AddressBookMain {
 					break;
 				}
 				break;
+
 			case 2:
 				while (true) {
 					if (addressBookList.size() == 0) {
@@ -212,6 +252,7 @@ class AddressBookMain {
 					editContactPerson(name);
 				}
 				break;
+
 			case 3:
 				while (true) {
 					if (addressBookList.size() == 0) {
@@ -220,12 +261,13 @@ class AddressBookMain {
 					}
 					System.out.println("Enter the first name to delete the contact details");
 					String dname = sc.next();
-					if (addressBookMap.containsKey(dname))
+					if (addressBookByName.containsKey(dname))
 						deleteContactPerson(dname);
 					else
 						System.out.println("No such Contact available !");
 				}
 				break;
+
 			default:
 				break;
 			}
