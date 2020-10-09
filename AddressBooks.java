@@ -1,6 +1,6 @@
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -16,6 +16,25 @@ public class AddressBooks {
 		addressBooks.forEach((k, v) -> System.out.println(k + " " + v.addressBookList + "\n"));
 	}
 
+	public void searchPerson(String searchIn) {
+
+		Iterator addressBookList = addressBooks.entrySet().iterator();
+		int noOfPerson = 0;
+		while (addressBookList.hasNext()) {
+			Map.Entry entry = (Map.Entry) addressBookList.next();
+			AddressBookMain a = (AddressBookMain) entry.getValue();
+			List<ContactPerson> list = a.getAddressBookList();
+			for (ContactPerson c : list) {
+				if (c.getCity().equalsIgnoreCase(searchIn) || c.getState().equalsIgnoreCase(searchIn)) {
+					System.out.println("\n" + c);
+					noOfPerson++;
+				}
+			}
+		}
+		if (noOfPerson == 0)
+			System.out.println("\nNo Person Found !!\n");
+	}
+
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
@@ -23,22 +42,44 @@ public class AddressBooks {
 		System.out.println("\n***** Welcome to Address Book Program *****\n");
 
 		while (true) {
-			AddressBookMain m = new AddressBookMain();
-			System.out.println("Enter name of the Address Book");
-			String name = sc.next();
-			if (a.addressBooks.containsKey(name))
-				System.out.println("\nAddress Book already exists !!!\n");
-			else {
-				a.addressBooks.put(name, m);
-				System.out.println("\nEnter Details for " + name);
-				m.maintainAddressBook();
-			}
-			System.out.println("Want to add more Address Books (y/n)");
-			String response = sc.next();
-			if (response.equals("y"))
-				continue;
-			else
+			System.out.println("\n1. Add a new Address Book");
+			System.out.println("\n2. Search person across all address books");
+			System.out.println("\n3. Exit");
+			System.out.println("\nEnter your choice");
+			int choice = sc.nextInt();
+
+			switch (choice) {
+			case 1:
+				while (true) {
+					AddressBookMain m = new AddressBookMain();
+					System.out.println("Enter name of the Address Book");
+					String name = sc.next();
+					if (a.addressBooks.containsKey(name)) {
+						System.out.println("\nAddress Book already exists !!!\n");
+						continue;
+					} else {
+						a.addressBooks.put(name, m);
+						System.out.println("\n In Address Book : " + name);
+						m.maintainAddressBook();
+						break;
+					}
+				}
 				break;
+
+			case 2:
+				System.out.println("Enter city or state to search a person");
+				String searchIn = sc.next();
+				a.searchPerson(searchIn);
+				break;
+
+			default:
+				break;
+			}
+
+			if (choice == 3)
+				break;
+			else
+				System.out.println("\nEnter option");
 		}
 		a.showAddressBooks();
 	}
@@ -53,6 +94,14 @@ class AddressBookMain {
 	public AddressBookMain() {
 		addressBookList = new ArrayList<ContactPerson>();
 		addressBookMap = new HashMap<String, ContactPerson>();
+	}
+
+	public List<ContactPerson> getAddressBookList() {
+		return addressBookList;
+	}
+
+	public Map<String, ContactPerson> getAddressBookMap() {
+		return addressBookMap;
 	}
 
 	private void addContactPerson(ContactPerson c) {
@@ -149,12 +198,7 @@ class AddressBookMain {
 							details[5], details[6], details[7]);
 
 					addContactPerson(c);
-					System.out.println("Want to add more Contacts (y/n)");
-					String option1 = sc.next();
-					if ((option1.equals("y")))
-						continue;
-					else
-						break;
+					break;
 				}
 				break;
 			case 2:
@@ -166,12 +210,6 @@ class AddressBookMain {
 					System.out.println("Enter the first name to edit the contact details");
 					String name = sc.next();
 					editContactPerson(name);
-					System.out.println("Want to edit more Contacts (y/n)");
-					String option2 = sc.next();
-					if ((option2.equals("y")))
-						continue;
-					else
-						break;
 				}
 				break;
 			case 3:
@@ -186,12 +224,6 @@ class AddressBookMain {
 						deleteContactPerson(dname);
 					else
 						System.out.println("No such Contact available !");
-					System.out.println("Want to delete more Contacts (y/n)");
-					String option3 = sc.next();
-					if ((option3.equals("y")))
-						continue;
-					else
-						break;
 				}
 				break;
 			default:
@@ -228,36 +260,64 @@ class ContactPerson {
 		this.email = email;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getLastName() {
+		return lastName;
 	}
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
+	public String getAddress() {
+		return address;
+	}
+
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getCity() {
+		return city;
 	}
 
 	public void setCity(String city) {
 		this.city = city;
 	}
 
+	public String getState() {
+		return state;
+	}
+
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public String getZip() {
+		return zip;
 	}
 
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
 
+	public String getPhone() {
+		return phone;
+	}
+
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 	public void setEmail(String email) {
@@ -266,10 +326,7 @@ class ContactPerson {
 
 	public boolean equals(Object o) {
 		ContactPerson c = (ContactPerson) o;
-		if (c.firstName.equals(this.firstName))
-			return true;
-		else
-			return false;
+		return c.firstName.equals(this.firstName);
 	}
 
 	public String toString() {
