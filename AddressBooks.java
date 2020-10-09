@@ -1,35 +1,41 @@
-import java.util.*;
 
-public class AddressBooks{
-	
-	public Map<String, AddressBookMain> addressBooks = new TreeMap<String,AddressBookMain>();
-	
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.TreeMap;
+
+public class AddressBooks {
+
+	public Map<String, AddressBookMain> addressBooks = new TreeMap<String, AddressBookMain>();
+
 	public void showAddressBooks() {
-		
+
 		System.out.println("\nList of Address Books Added: \n");
-		addressBooks.forEach((k,v) -> System.out.println(k + " " + v.addressBookList + "\n"));
+		addressBooks.forEach((k, v) -> System.out.println(k + " " + v.addressBookList + "\n"));
 	}
-	
+
 	public static void main(String[] args) {
-		
+
 		Scanner sc = new Scanner(System.in);
 		AddressBooks a = new AddressBooks();
 		System.out.println("\n***** Welcome to Address Book Program *****\n");
-		
-		while(true) {
+
+		while (true) {
 			AddressBookMain m = new AddressBookMain();
 			System.out.println("Enter name of the Address Book");
 			String name = sc.next();
-			if(a.addressBooks.containsKey(name))
+			if (a.addressBooks.containsKey(name))
 				System.out.println("\nAddress Book already exists !!!\n");
 			else {
-				a.addressBooks.put(name,m);
+				a.addressBooks.put(name, m);
 				System.out.println("\nEnter Details for " + name);
 				m.maintainAddressBook();
 			}
 			System.out.println("Want to add more Address Books (y/n)");
 			String response = sc.next();
-			if(response.equals("y"))
+			if (response.equals("y"))
 				continue;
 			else
 				break;
@@ -57,12 +63,12 @@ class AddressBookMain {
 
 	private void editContactPerson(String firstName) {
 		ContactPerson cp = addressBookMap.get(firstName);
-		if(cp == null) {
+		if (cp == null) {
 			System.out.println("\nNo such Person available !!\n");
-		}
-		else {
+		} else {
 			System.out.println("Here is the Person Details to be edited " + cp);
-			System.out.println("Enter Updated Contact details of person in format: Address, City, State, Zip, Phone, email");
+			System.out.println(
+					"Enter Updated Contact details of person in format: Address, City, State, Zip, Phone, email");
 			String[] details = new String[6];
 			for (int i = 0; i <= 5; i++) {
 				details[i] = sc.next();
@@ -90,6 +96,22 @@ class AddressBookMain {
 		System.out.println("Contact Deleted !!!");
 	}
 
+	/**
+	 * UC7
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public boolean checkForDuplicateName(String name) {
+		for (ContactPerson cd : addressBookList) {
+			if (cd.getFirstName().equals(name)) {
+				System.out.println("A Person with this name already exist !!\n");
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void maintainAddressBook() {
 
 		while (true) {
@@ -103,13 +125,29 @@ class AddressBookMain {
 			switch (choice) {
 			case 1:
 				while (true) {
-					System.out.println("Enter Contact details of person in format: first name, last name, address, city, state, zip, phone, email");
+					System.out.println("Enter Contact details of the person\n");
 					String[] details = new String[8];
-					for (int i = 0; i <= 7; i++) {
-						details[i] = sc.next();
-					}
+					System.out.println("Enter First Name :");
+					details[0] = sc.next();
+					if (checkForDuplicateName(details[0]))
+						continue;
+					System.out.println("Enter Last Name :");
+					details[1] = sc.next();
+					System.out.println("Enter Address :");
+					details[2] = sc.next();
+					System.out.println("Enter City :");
+					details[3] = sc.next();
+					System.out.println("Enter State :");
+					details[4] = sc.next();
+					System.out.println("Enter Zip :");
+					details[5] = sc.next();
+					System.out.println("Enter Phone :");
+					details[6] = sc.next();
+					System.out.println("Enter e-mail :");
+					details[7] = sc.next();
 					ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4],
 							details[5], details[6], details[7]);
+
 					addContactPerson(c);
 					System.out.println("Want to add more Contacts (y/n)");
 					String option1 = sc.next();
@@ -121,7 +159,7 @@ class AddressBookMain {
 				break;
 			case 2:
 				while (true) {
-					if(addressBookList.size() == 0) {
+					if (addressBookList.size() == 0) {
 						System.out.println("No Contacts Available !!! \n Please add some ");
 						break;
 					}
@@ -138,15 +176,15 @@ class AddressBookMain {
 				break;
 			case 3:
 				while (true) {
-					if(addressBookList.size() == 0) {
+					if (addressBookList.size() == 0) {
 						System.out.println("No Contacts Available !!! \n Please add some ");
 						break;
 					}
 					System.out.println("Enter the first name to delete the contact details");
 					String dname = sc.next();
-					if(addressBookMap.containsKey(dname))
+					if (addressBookMap.containsKey(dname))
 						deleteContactPerson(dname);
-					else 
+					else
 						System.out.println("No such Contact available !");
 					System.out.println("Want to delete more Contacts (y/n)");
 					String option3 = sc.next();
@@ -224,6 +262,14 @@ class ContactPerson {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public boolean equals(Object o) {
+		ContactPerson c = (ContactPerson) o;
+		if (c.firstName.equals(this.firstName))
+			return true;
+		else
+			return false;
 	}
 
 	public String toString() {
