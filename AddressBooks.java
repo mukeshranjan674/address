@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 public class AddressBooks {
 
@@ -200,14 +201,11 @@ class AddressBookMain {
 		System.out.println("Contact Deleted !!!");
 	}
 
-	public boolean checkForDuplicateName(String name) {
-		for (ContactPerson cd : addressBookList) {
-			if (cd.getFirstName().equals(name)) {
-				System.out.println("A Person with this name already exist !!\n");
-				return true;
-			}
-		}
-		return false;
+	public boolean checkForDuplicateName(ContactPerson person) {
+
+		Predicate<ContactPerson> compareName = n-> n.equals(person);
+		boolean value = addressBookList.stream().anyMatch(compareName);
+		return value;
 	}
 
 	public void maintainAddressBook() {
@@ -227,8 +225,6 @@ class AddressBookMain {
 					String[] details = new String[8];
 					System.out.println("Enter First Name :");
 					details[0] = sc.next();
-					if (checkForDuplicateName(details[0]))
-						continue;
 					System.out.println("Enter Last Name :");
 					details[1] = sc.next();
 					System.out.println("Enter Address :");
@@ -245,6 +241,10 @@ class AddressBookMain {
 					details[7] = sc.next();
 					ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4],
 							details[5], details[6], details[7]);
+					if(checkForDuplicateName(c)) {
+						System.out.println("Person already exist in the Address Book !!\n Please try with a different name");
+						continue;
+					}
 
 					addContactPerson(c);
 					break;
