@@ -27,7 +27,7 @@ public class AddressBooks {
 			System.out.println("\n3. Show names of Address Books");
 			System.out.println("\n4. Show persons by city or state");
 			System.out.println("\n5. Show Count of persons by city or state");
-			System.out.println("\n6. Sort By First Name");
+			System.out.println("\n6. Sort");
 			System.out.println("\n7. Exit");
 			System.out.println("\nEnter your choice");
 			int choice = sc.nextInt();
@@ -70,9 +70,9 @@ public class AddressBooks {
 				System.out.println("Showing Count of Persons by City and State");
 				a.countPerson();
 				break;
-				
+
 			case 6:
-				a.sort();
+				a.sort(sc);
 				break;
 
 			default:
@@ -87,20 +87,56 @@ public class AddressBooks {
 		System.out.println("\nThank You !!!");
 		sc.close();
 	}
-	
-	public void sort() {
+
+	public void sort(Scanner sc) {
+		System.out.println("Sort by : [Name] [City] [State] [Zip] \nEnter Option");
+		String sortOption = sc.next();
+		if (sortOption.equalsIgnoreCase("name"))
+			sortByName();
+		if (sortOption.equalsIgnoreCase("state"))
+			sortByState();
+		if (sortOption.equalsIgnoreCase("city"))
+			sortByCity();
+		if (sortOption.equalsIgnoreCase("zip"))
+			sortByZip();
+		else
+			System.out.println("Enter correct option");
+	}
+
+	public void sortByName() {
 		List<ContactPerson> list = new ArrayList<ContactPerson>();
 		addressBooks.values().forEach(n -> n.getAddressBookList().forEach(n1 -> list.add(n1)));
-		Collections.sort(list, (ContactPerson c1 , ContactPerson c2)-> c1.getFirstName().compareTo(c2.getFirstName()));
-		list.forEach(n->System.out.println(n));
+		Collections.sort(list, (ContactPerson c1, ContactPerson c2) -> c1.getFirstName().compareTo(c2.getFirstName()));
+		list.forEach(n -> System.out.println(n));
 	}
-	
+
+	public void sortByCity() {
+		List<ContactPerson> list = new ArrayList<ContactPerson>();
+		addressBooks.values().forEach(n -> n.getAddressBookList().forEach(n1 -> list.add(n1)));
+		Collections.sort(list, (ContactPerson c1, ContactPerson c2) -> c1.getCity().compareTo(c2.getCity()));
+		list.forEach(n -> System.out.println(n));
+	}
+
+	public void sortByState() {
+		List<ContactPerson> list = new ArrayList<ContactPerson>();
+		addressBooks.values().forEach(n -> n.getAddressBookList().forEach(n1 -> list.add(n1)));
+		Collections.sort(list, (ContactPerson c1, ContactPerson c2) -> c1.getState().compareTo(c2.getState()));
+		list.forEach(n -> System.out.println(n));
+	}
+
+	public void sortByZip() {
+		List<ContactPerson> list = new ArrayList<ContactPerson>();
+		addressBooks.values().forEach(n -> n.getAddressBookList().forEach(n1 -> list.add(n1)));
+		Collections.sort(list, (ContactPerson c1, ContactPerson c2) -> c1.getZip().compareTo(c2.getZip()));
+		list.forEach(n -> System.out.println(n));
+	}
+
 	public void showAddressBooks() {
 
 		System.out.println("\nList of Address Books Added: \n");
 		addressBooks.forEach((k, v) -> System.out.println(k + "\n"));
 	}
-	
+
 	public void countPerson() {
 		personsByCity = new TreeMap<String, List<ContactPerson>>();
 		createMapForCity();
