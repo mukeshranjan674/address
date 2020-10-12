@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -5,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class AddressBooks {
@@ -19,21 +21,11 @@ public class AddressBooks {
 
 	public void searchPerson(String searchIn) {
 
-		Iterator addressBookList = addressBooks.entrySet().iterator();
-		int noOfPerson = 0;
-		while (addressBookList.hasNext()) {
-			Map.Entry entry = (Map.Entry) addressBookList.next();
-			AddressBookMain a = (AddressBookMain) entry.getValue();
-			List<ContactPerson> list = a.getAddressBookList();
-			for (ContactPerson c : list) {
-				if (c.getCity().equalsIgnoreCase(searchIn) || c.getState().equalsIgnoreCase(searchIn)) {
-					System.out.println("\n" + c);
-					noOfPerson++;
-				}
-			}
-		}
-		if (noOfPerson == 0)
-			System.out.println("\nNo Person Found !!\n");
+		Predicate<ContactPerson> search = n -> n.getFirstName().equals(searchIn) ? true : false;
+		Consumer<ContactPerson> display = n -> System.out.println(n);
+		addressBooks.forEach((k, v) -> {
+			v.getAddressBookList().stream().filter(search).forEach(display);
+		});
 	}
 
 	public static void main(String[] args) {
@@ -148,7 +140,7 @@ class AddressBookMain {
 
 	public boolean checkForDuplicateName(ContactPerson person) {
 
-		Predicate<ContactPerson> compareName = n-> n.equals(person);
+		Predicate<ContactPerson> compareName = n -> n.equals(person);
 		boolean value = addressBookList.stream().anyMatch(compareName);
 		return value;
 	}
@@ -186,8 +178,9 @@ class AddressBookMain {
 					details[7] = sc.next();
 					ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4],
 							details[5], details[6], details[7]);
-					if(checkForDuplicateName(c)) {
-						System.out.println("Person already exist in the Address Book !!\n Please try with a different name");
+					if (checkForDuplicateName(c)) {
+						System.out.println(
+								"Person already exist in the Address Book !!\n Please try with a different name");
 						continue;
 					}
 
