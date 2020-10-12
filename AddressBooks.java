@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,86 @@ public class AddressBooks {
 	public Map<String, List<ContactPerson>> personsByState = new TreeMap<String, List<ContactPerson>>();
 	public Map<String, List<ContactPerson>> personsByCity = new TreeMap<String, List<ContactPerson>>();
 
+	public static void main(String[] args) {
+
+		Scanner sc = new Scanner(System.in);
+		AddressBooks a = new AddressBooks();
+		System.out.println("\n***** Welcome to Address Book Program *****\n");
+
+		while (true) {
+			System.out.println("\n1. Add a new Address Book");
+			System.out.println("\n2. Search person across all address books");
+			System.out.println("\n3. Show names of Address Books");
+			System.out.println("\n4. Show persons by city or state");
+			System.out.println("\n5. Show Count of persons by city or state");
+			System.out.println("\n6. Sort By First Name");
+			System.out.println("\n7. Exit");
+			System.out.println("\nEnter your choice");
+			int choice = sc.nextInt();
+
+			switch (choice) {
+			case 1:
+				while (true) {
+					AddressBookMain m = new AddressBookMain();
+					System.out.println("Enter name of the Address Book");
+					String name = sc.next();
+					if (a.addressBooks.containsKey(name)) {
+						System.out.println("\nAddress Book already exists !!!\n");
+						continue;
+					} else {
+						a.addressBooks.put(name, m);
+						System.out.println("\n In Address Book : " + name);
+						m.maintainAddressBook();
+						break;
+					}
+				}
+				break;
+
+			case 2:
+				System.out.println("Enter city or state to search a person");
+				String searchForPerson = sc.next();
+				a.searchPerson(searchForPerson);
+				break;
+
+			case 3:
+				a.showAddressBooks();
+				break;
+
+			case 4:
+				System.out.println("Enter city or state");
+				String searchIn = sc.next();
+				a.searchPersonByCityOrState(searchIn);
+				break;
+
+			case 5:
+				System.out.println("Showing Count of Persons by City and State");
+				a.countPerson();
+				break;
+				
+			case 6:
+				a.sort();
+				break;
+
+			default:
+				break;
+			}
+
+			if (choice == 7)
+				break;
+			else
+				System.out.println("\nEnter option");
+		}
+		System.out.println("\nThank You !!!");
+		sc.close();
+	}
+	
+	public void sort() {
+		List<ContactPerson> list = new ArrayList<ContactPerson>();
+		addressBooks.values().forEach(n -> n.getAddressBookList().forEach(n1 -> list.add(n1)));
+		Collections.sort(list, (ContactPerson c1 , ContactPerson c2)-> c1.getFirstName().compareTo(c2.getFirstName()));
+		list.forEach(n->System.out.println(n));
+	}
+	
 	public void showAddressBooks() {
 
 		System.out.println("\nList of Address Books Added: \n");
@@ -35,7 +116,6 @@ public class AddressBooks {
 			System.out.print("\n" + k);
 			System.out.print("  " + v.stream().count());
 		});
-
 	}
 
 	public void searchPerson(String searchForPerson) {
@@ -95,74 +175,6 @@ public class AddressBooks {
 			});
 		} else
 			System.out.println("Wrong Input");
-	}
-
-	public static void main(String[] args) {
-
-		Scanner sc = new Scanner(System.in);
-		AddressBooks a = new AddressBooks();
-		System.out.println("\n***** Welcome to Address Book Program *****\n");
-
-		while (true) {
-			System.out.println("\n1. Add a new Address Book");
-			System.out.println("\n2. Search person across all address books");
-			System.out.println("\n3. Show names of Address Books");
-			System.out.println("\n4. Show persons by city or state");
-			System.out.println("\n5. Show Count of persons by city or state");
-			System.out.println("\n6. Exit");
-			System.out.println("\nEnter your choice");
-			int choice = sc.nextInt();
-
-			switch (choice) {
-			case 1:
-				while (true) {
-					AddressBookMain m = new AddressBookMain();
-					System.out.println("Enter name of the Address Book");
-					String name = sc.next();
-					if (a.addressBooks.containsKey(name)) {
-						System.out.println("\nAddress Book already exists !!!\n");
-						continue;
-					} else {
-						a.addressBooks.put(name, m);
-						System.out.println("\n In Address Book : " + name);
-						m.maintainAddressBook();
-						break;
-					}
-				}
-				break;
-
-			case 2:
-				System.out.println("Enter city or state to search a person");
-				String searchForPerson = sc.next();
-				a.searchPerson(searchForPerson);
-				break;
-
-			case 3:
-				a.showAddressBooks();
-				break;
-
-			case 4:
-				System.out.println("Enter city or state");
-				String searchIn = sc.next();
-				a.searchPersonByCityOrState(searchIn);
-				break;
-
-			case 5:
-				System.out.println("Showing Count of Persons by City and State");
-				a.countPerson();
-				break;
-
-			default:
-				break;
-			}
-
-			if (choice == 6)
-				break;
-			else
-				System.out.println("\nEnter option");
-		}
-		System.out.println("\nThank You !!!");
-		sc.close();
 	}
 }
 
