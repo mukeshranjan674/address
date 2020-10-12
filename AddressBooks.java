@@ -1,18 +1,20 @@
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class AddressBooks {
 
 	public Map<String, AddressBookMain> addressBooks = new TreeMap<String, AddressBookMain>();
+	public Map<String, List<ContactPerson>> personsByState = new TreeMap<String, List<ContactPerson>>();
+	public Map<String, List<ContactPerson>> personsByCity = new TreeMap<String, List<ContactPerson>>();
 
 	public void showAddressBooks() {
 
@@ -20,12 +22,53 @@ public class AddressBooks {
 		addressBooks.forEach((k, v) -> System.out.println(k + "\n"));
 	}
 
-	public void searchPerson(String searchIn, boolean toView) {
-		Predicate<ContactPerson> search = n -> n.getFirstName().equals(searchIn) ? true : false;
+	public void searchPerson(String searchForPerson) {
+		Predicate<ContactPerson> search = n -> n.getFirstName().equals(searchForPerson) ? true : false;
 		Consumer<ContactPerson> display = n -> System.out.println(n);
 		addressBooks.forEach((k, v) -> {
 			v.getAddressBookList().stream().filter(search).forEach(display);
 		});
+	}
+
+	private void searchPersonByCityOrState(String searchIn) {
+
+		if (searchIn.equalsIgnoreCase("city")) {
+			addressBooks.forEach((k, v) -> {
+				v.getAddressBookByCity().forEach((k1, v1) -> {
+					if (personsByCity.containsKey(k1)) {
+						List<ContactPerson> list = personsByCity.get(k1);
+						list.add(v1);
+					} else {
+						List<ContactPerson> list = new ArrayList<ContactPerson>();
+						list.add(v1);
+						personsByCity.put(k1, list);
+					}
+				});
+			});
+			personsByCity.forEach((k, v) -> {
+				System.out.println(k);
+				v.stream().forEach(n -> System.out.println(n));
+			});
+
+		} else if (searchIn.equalsIgnoreCase("state")) {
+			addressBooks.forEach((k, v) -> {
+				v.getAddressBookByCity().forEach((k1, v1) -> {
+					if (personsByState.containsKey(k1)) {
+						List<ContactPerson> list = personsByState.get(k1);
+						list.add(v1);
+					} else {
+						List<ContactPerson> list = new ArrayList<ContactPerson>();
+						list.add(v1);
+						personsByState.put(k1, list);
+					}
+				});
+			});
+			personsByState.forEach((k, v) -> {
+				System.out.println(k);
+				v.stream().forEach(n -> System.out.println(n));
+			});
+		} else
+			System.out.println("Wrong Input");
 	}
 
 	public static void main(String[] args) {
@@ -37,8 +80,8 @@ public class AddressBooks {
 		while (true) {
 			System.out.println("\n1. Add a new Address Book");
 			System.out.println("\n2. Search person across all address books");
-			System.out.println("\n3. View names of Address Books");
-			System.out.println("\n4. View count of persons according to state or city ");
+			System.out.println("\n3. Show names of Address Books");
+			System.out.println("\n4. Show persons by city or state");
 			System.out.println("\n5. Exit");
 			System.out.println("\nEnter your choice");
 			int choice = sc.nextInt();
@@ -63,8 +106,8 @@ public class AddressBooks {
 
 			case 2:
 				System.out.println("Enter city or state to search a person");
-				String searchIn = sc.next();
-				a.searchPerson(searchIn, true);
+				String searchForPerson = sc.next();
+				a.searchPerson(searchForPerson);
 				break;
 
 			case 3:
@@ -72,11 +115,10 @@ public class AddressBooks {
 				break;
 
 			case 4:
-				System.out.println("Enter city or state to view count");
-				String countFor = sc.next();
-				int count = a.searchPerson(countFor, false);
-				if (count != 0)
-					System.out.println("No of Persons in " + countFor + "is : " + count);
+				System.out.println("Enter city or state");
+				String searchIn = sc.next();
+				a.searchPersonByCityOrState(searchIn);
+				break;
 
 			default:
 				break;
@@ -88,6 +130,7 @@ public class AddressBooks {
 				System.out.println("\nEnter option");
 		}
 		System.out.println("\nThank You !!!");
+		sc.close();
 	}
 }
 
@@ -111,11 +154,17 @@ class AddressBookMain {
 	}
 
 	public Map<String, ContactPerson> getAddressBookByCity() {
-		return addressBookByCity;
+		Map<String, ContactPerson> result = addressBookByCity.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+						LinkedHashMap::new));
+		return result;
 	}
 
 	public Map<String, ContactPerson> getAddressBookByState() {
-		return addressBookByState;
+		Map<String, ContactPerson> result = addressBookByCity.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+						LinkedHashMap::new));
+		return result;
 	}
 
 	public List<ContactPerson> getAddressBookList() {
