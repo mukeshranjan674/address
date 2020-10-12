@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class AddressBooks {
@@ -18,44 +20,12 @@ public class AddressBooks {
 		addressBooks.forEach((k, v) -> System.out.println(k + "\n"));
 	}
 
-	public int searchPerson(String searchIn, boolean toView) {
-
-		Iterator addressBookList = addressBooks.entrySet().iterator();
-		int noOfPersonInCity = 0;
-		int noOfPersonInState = 0;
-		while (addressBookList.hasNext()) {
-			Map.Entry entry = (Map.Entry) addressBookList.next();
-			AddressBookMain a = (AddressBookMain) entry.getValue();
-
-			Map<String, ContactPerson> mapCity = a.getAddressBookByCity();
-			ArrayList<String> listCity = new ArrayList<>(mapCity.keySet());
-			Collections.sort(listCity);
-			for (String s : listCity)
-				if (s.equals(searchIn)) {
-					if (toView)
-						System.out.println(mapCity.get(s));
-					noOfPersonInCity++;
-				}
-
-			Map<String, ContactPerson> mapState = a.getAddressBookByState();
-			ArrayList<String> listState = new ArrayList<>(mapState.keySet());
-			Collections.sort(listState);
-			for (String s : listState)
-				if (s.equals(searchIn)) {
-					if (toView)
-						System.out.println(mapState.get(s));
-					noOfPersonInState++;
-				}
-		}
-
-		if (noOfPersonInCity != 0)
-			return noOfPersonInCity;
-		if (noOfPersonInState != 0)
-			return noOfPersonInState;
-		else {
-			System.out.println("\nNo Person Found !!\n");
-			return 0;
-		}
+	public void searchPerson(String searchIn, boolean toView) {
+		Predicate<ContactPerson> search = n -> n.getFirstName().equals(searchIn) ? true : false;
+		Consumer<ContactPerson> display = n -> System.out.println(n);
+		addressBooks.forEach((k, v) -> {
+			v.getAddressBookList().stream().filter(search).forEach(display);
+		});
 	}
 
 	public static void main(String[] args) {
@@ -203,7 +173,7 @@ class AddressBookMain {
 
 	public boolean checkForDuplicateName(ContactPerson person) {
 
-		Predicate<ContactPerson> compareName = n-> n.equals(person);
+		Predicate<ContactPerson> compareName = n -> n.equals(person);
 		boolean value = addressBookList.stream().anyMatch(compareName);
 		return value;
 	}
@@ -241,8 +211,9 @@ class AddressBookMain {
 					details[7] = sc.next();
 					ContactPerson c = new ContactPerson(details[0], details[1], details[2], details[3], details[4],
 							details[5], details[6], details[7]);
-					if(checkForDuplicateName(c)) {
-						System.out.println("Person already exist in the Address Book !!\n Please try with a different name");
+					if (checkForDuplicateName(c)) {
+						System.out.println(
+								"Person already exist in the Address Book !!\n Please try with a different name");
 						continue;
 					}
 
